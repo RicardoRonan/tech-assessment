@@ -1,5 +1,5 @@
 const express = require('express');
-const { getPaginatedItems } = require('../services/itemsService');
+const { getPaginatedItems } = require('../services/itemService');
 
 const router = express.Router();
 
