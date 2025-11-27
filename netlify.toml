@@ -1,0 +1,20 @@
+[build]
+  # Install root dependencies (for serverless functions) and client dependencies, then build
+  command = "npm install && cd src/client && npm install && npm run build"
+  # Directory where the built front-end will be located
+  publish = "src/client/dist"
+
+# Reverse proxy configuration - routes /api/* requests to Netlify functions
+# Using rewrite to preserve the full path including /api prefix
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/api/:splat"
+  status = 200
+  force = true
+
+# SPA fallback - serve index.html for all non-API routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
