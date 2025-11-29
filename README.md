@@ -81,14 +81,19 @@ cd ../..
 
 ### 3. Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory by copying the example file:
 
 ```bash
-# Copy the example (you'll need to create this manually)
-# The .env.example file should contain:
+# Copy .env.example to .env
+cp .env.example .env
 ```
 
-Create `.env` with the following variables:
+Or on Windows:
+```powershell
+Copy-Item .env.example .env
+```
+
+Then edit `.env` and replace the placeholder values with your actual Supabase credentials:
 
 ```env
 SUPABASE_URL=your_supabase_project_url_here

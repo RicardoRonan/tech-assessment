@@ -1,6 +1,6 @@
 <template>
   <main class="app">
-    <h1>Items</h1>
+    <h1>Laptops by brand</h1>
 
     <p v-if="error" class="error">{{ error }}</p>
     <p v-if="loading">Loading...</p>
