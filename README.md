@@ -4,12 +4,7 @@ A full-stack Node.js application featuring a Supabase database connection, batch
 
 ## Project Overview
 
-This application demonstrates:
-- **Database Integration**: Connection to Supabase (PostgreSQL) with seeded data
-- **Batch Operations**: API endpoint for bulk item insertion with validation
-- **Pagination**: Database-level pagination for efficient data retrieval
-- **Reverse Proxy**: Netlify configuration routing `/api/*` requests to serverless functions
-- **Front-End**: Vue.js 3 application displaying paginated results
+A full-stack web application for managing and displaying laptop inventory. The app features a Vue.js front-end with search and filtering capabilities, a Node.js/Express backend API, and uses Supabase (PostgreSQL) for data storage. It supports batch item insertion, paginated data retrieval, and is deployed on Netlify with serverless functions handling API requests.
 
 ## Tech Stack
 
@@ -101,6 +96,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 PORT=4000
 ```
 
+**Example `.env` file:**
+```env
+SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+PORT=4000
+```
+
 **How to get Supabase credentials:**
 
 1. Go to https://app.supabase.com
@@ -146,7 +148,8 @@ The front-end will run on `http://localhost:5173` (or another port if 5173 is ta
 **Local Development Setup:**
 - The Vite dev server (`vite.config.js`) proxies `/api/*` requests to `http://localhost:4000`
 - This simulates the reverse proxy behavior you'll have in production
-- Open `http://localhost:5173` in your browser
+- All API calls use the same origin (`/api/*`) - no CORS issues
+- Open `http://localhost:5173` in your browser to view the application
 
 ### Seed the Database
 
@@ -170,17 +173,21 @@ curl -X POST http://localhost:4000/api/batch \
   -H "Content-Type: application/json" \
   -d '[
     {
-      "name": "Item 1",
-      "category": "Electronics",
+      "name": "MacBook Pro 16\"",
+      "category": "Apple",
       "createdAt": "2024-01-15T10:00:00Z"
     },
     {
-      "name": "Item 2",
-      "category": "Books"
+      "name": "XPS 13",
+      "category": "Dell"
+    },
+    {
+      "name": "ThinkPad X1 Carbon",
+      "category": "Lenovo"
     },
     {
       "name": "",
-      "category": "Invalid"
+      "category": "HP"
     }
   ]'
 ```
@@ -188,11 +195,11 @@ curl -X POST http://localhost:4000/api/batch \
 **Response:**
 ```json
 {
-  "successCount": 2,
+  "successCount": 3,
   "errorCount": 1,
   "errors": [
     {
-      "index": 2,
+      "index": 3,
       "message": "Invalid name"
     }
   ]
@@ -206,16 +213,28 @@ curl -X POST http://localhost:4000/api/batch \
 
 ### GET /api/items
 
-Get paginated items.
+Get paginated items with optional search and category filtering.
 
 **Request:**
 ```bash
+# Basic pagination
 curl "http://localhost:4000/api/items?page=1&limit=10"
+
+# With search filter
+curl "http://localhost:4000/api/items?page=1&limit=10&search=MacBook"
+
+# With category filter
+curl "http://localhost:4000/api/items?page=1&limit=10&category=Apple"
+
+# Combined filters
+curl "http://localhost:4000/api/items?page=1&limit=10&search=Pro&category=Apple"
 ```
 
 **Query Parameters:**
 - `page` (optional): Page number (default: 1, minimum: 1)
 - `limit` (optional): Items per page (default: 10, minimum: 1, maximum: 50)
+- `search` (optional): Search term to filter by name or category (case-insensitive partial match)
+- `category` (optional): Filter by exact category name
 
 **Response:**
 ```json
@@ -223,17 +242,24 @@ curl "http://localhost:4000/api/items?page=1&limit=10"
   "items": [
     {
       "id": 1,
-      "name": "Item 1",
-      "category": "Category A",
+      "name": "MacBook Air M2",
+      "category": "Apple",
       "created_at": "2024-01-15T10:00:00.000Z"
     },
-    ...
+    {
+      "id": 2,
+      "name": "MacBook Pro 14\"",
+      "category": "Apple",
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
   ],
   "totalCount": 50,
   "totalPages": 5,
   "currentPage": 1,
   "nextPage": 2,
-  "prevPage": null
+  "prevPage": null,
+  "search": null,
+  "category": null
 }
 ```
 
@@ -252,14 +278,32 @@ In `client/vite.config.js`, Vite's dev server proxies `/api/*` to `http://localh
 
 ### Production (Netlify)
 
-The `netlify.toml` file configures:
-- **Redirects**: `/api/*` → `/.netlify/functions/server/:splat`
-- **SPA Fallback**: All other routes → `/index.html`
+The `netlify.toml` file configures the reverse proxy:
 
-This means:
-- Front-end calls: `fetch('/api/items?page=1')`
-- Netlify routes to: `/.netlify/functions/server/api/items?page=1`
-- The serverless function processes the request
+```toml
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+**How it works:**
+1. Front-end makes request: `fetch('/api/items?page=1')`
+2. Netlify intercepts `/api/*` requests
+3. Netlify routes to: `/.netlify/functions/server/api/items?page=1`
+4. Serverless function (`netlify/functions/server.js`) processes the request
+5. Response is returned to the front-end on the same origin
+
+This configuration ensures:
+- All requests use the same origin (no CORS)
+- API routes are handled by serverless functions
+- Front-end routes are handled by the SPA (index.html)
 
 ## Deployment Instructions
 
@@ -348,9 +392,10 @@ Using curl:
 curl -X POST http://localhost:4000/api/batch \
   -H "Content-Type: application/json" \
   -d '[
-    {"name": "Test Item 1", "category": "Test"},
-    {"name": "Test Item 2", "category": "Test"},
-    {"name": "", "category": "Should fail"}
+    {"name": "MacBook Air M2", "category": "Apple"},
+    {"name": "XPS 15", "category": "Dell"},
+    {"name": "Spectre x360", "category": "HP"},
+    {"name": "", "category": "Lenovo"}
   ]'
 ```
 
@@ -361,8 +406,9 @@ Using Postman:
 - Body (raw JSON):
 ```json
 [
-  {"name": "Test Item 1", "category": "Test"},
-  {"name": "Test Item 2", "category": "Test"}
+  {"name": "MacBook Air M2", "category": "Apple"},
+  {"name": "XPS 15", "category": "Dell"},
+  {"name": "ThinkPad X1 Carbon", "category": "Lenovo"}
 ]
 ```
 
