@@ -492,12 +492,13 @@ h1 {
   }
 
   .table-wrapper {
-    margin: 0 -1rem;
-    padding: 0 1rem;
+    margin: 0 auto;
+    width: calc(100% - 2rem);
   }
 
   .data-table {
     min-width: 600px;
+    margin: 0 auto;
   }
 
   .data-table th,
@@ -535,8 +536,8 @@ h1 {
   }
 
   .table-wrapper {
-    margin: 0 -0.75rem;
-    padding: 0 0.75rem;
+    margin: 0 auto;
+    width: calc(100% - 1.5rem);
   }
 
   .data-table th,
