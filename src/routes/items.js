@@ -9,15 +9,16 @@ router.get('/', async (req, res) => {
   const search = req.query.search || null;
   const category = req.query.category || null;
 
+  // normalize pagination params
   if (Number.isNaN(page) || page < 1) page = 1;
   if (Number.isNaN(limit) || limit < 1) limit = 10;
-  if (limit > 50) limit = 50;
+  if (limit > 50) limit = 50; // cap at 50 to avoid huge queries
 
   const { data, error, count } = await getPaginatedItems(page, limit, search, category);
 
   if (error) {
     return res.status(500).json({
-      message: 'Failed to fetch items',
+      message: 'Something went wrong while fetching items, try again',
       detail: error.message,
     });
   }

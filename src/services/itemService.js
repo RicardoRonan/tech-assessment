@@ -2,6 +2,7 @@ const supabase = require('../config/supabaseClient');
 
 async function insertItems(items) {
   const { data, error } = await supabase.from('items').insert(items);
+  // console.log('Inserted items result', { data, error });
   return { data, error };
 }
 
@@ -12,6 +13,7 @@ async function getPaginatedItems(page, limit, search = null, category = null) {
     .from('items')
     .select('*', { count: 'exact' });
 
+  // TODO: if search gets more complex, might want to use full-text search
   if (search && search.trim()) {
     const searchTerm = search.trim();
     const pattern = `%${searchTerm}%`;

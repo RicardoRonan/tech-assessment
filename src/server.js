@@ -6,6 +6,7 @@ const itemsRouter = require('./routes/items');
 
 const app = express();
 
+// CORS - keeping it permissive for this assessment
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');

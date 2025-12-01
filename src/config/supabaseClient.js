@@ -5,7 +5,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('\n❌ Missing Supabase environment variables!');
+  console.error('\nMissing Supabase environment variables!');
   console.error('Please create a .env file in the root directory with:');
   console.error('  SUPABASE_URL=your_supabase_project_url');
   console.error('  SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key');

@@ -2,7 +2,7 @@
   <div class="app-container">
     <main class="app">
       <header class="header">
-        <h1>Laptops by brand</h1>
+        <h1>Items Manager</h1>
       </header>
 
       <div class="filters">
@@ -55,6 +55,7 @@
         No items found.
       </p>
 
+      <!-- TODO: extract pagination controls into a separate component if reused -->
       <div class="pagination">
         <div class="pagination-info">
           <span v-if="totalPages">
@@ -114,6 +115,7 @@ const searchQuery = ref('');
 const selectedCategory = ref('');
 const debounceTimer = ref(null);
 
+// TODO: could fetch categories dynamically from API if needed
 const categories = [
   'Apple',
   'Dell',
@@ -127,6 +129,7 @@ const categories = [
   'Microsoft',
   'Google',
   'Framework',
+  'Accessories',
 ];
 
 async function fetchPage(page = 1) {
@@ -148,12 +151,12 @@ async function fetchPage(page = 1) {
       params.append('category', selectedCategory.value.trim());
     }
 
-    const res = await fetch(`/api/items?${params.toString()}`);
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
+    const response = await fetch(`/api/items?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
     }
 
-    const data = await res.json();
+    const data = await response.json();
 
     items.value = data.items || [];
     currentPage.value = data.currentPage;
@@ -161,12 +164,13 @@ async function fetchPage(page = 1) {
     nextPage.value = data.nextPage;
     prevPage.value = data.prevPage;
   } catch (err) {
-    error.value = err.message || 'Something went wrong';
+    error.value = err.message || 'Something went wrong while loading items';
   } finally {
     loading.value = false;
   }
 }
 
+// debounce search to avoid too many API calls
 function handleSearchInput() {
   if (debounceTimer.value) {
     clearTimeout(debounceTimer.value);
