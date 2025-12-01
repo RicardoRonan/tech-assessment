@@ -3,7 +3,6 @@ const { insertItems } = require('../services/itemService');
 
 const router = express.Router();
 
-// POST /api/batch
 router.post('/', async (req, res) => {
   const payload = req.body;
 

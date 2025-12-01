@@ -1,6 +1,5 @@
 const supabase = require('../config/supabaseClient');
 
-// Simple list of 50 laptops with different brand categories
 const laptops = [
   { name: 'MacBook Pro 16"', category: 'Apple' },
   { name: 'MacBook Air M2', category: 'Apple' },

@@ -27,14 +27,14 @@ This application demonstrates:
 ├── netlify/
 │   └── functions/
 │       └── server.js          # Netlify serverless function wrapper
+├── client/                    # Vue.js front-end
+│   ├── src/
+│   │   ├── App.vue            # Main component with pagination
+│   │   └── main.js
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
 ├── src/
-│   ├── client/                # Vue.js front-end
-│   │   ├── src/
-│   │   │   ├── App.vue        # Main component with pagination
-│   │   │   └── main.js
-│   │   ├── index.html
-│   │   ├── package.json
-│   │   └── vite.config.js
 │   ├── config/
 │   │   └── supabaseClient.js  # Supabase client configuration
 │   ├── routes/
@@ -74,9 +74,9 @@ npm install
 
 Install front-end dependencies:
 ```bash
-cd src/client
+cd client
 npm install
-cd ../..
+cd ..
 ```
 
 ### 3. Environment Configuration
@@ -137,7 +137,7 @@ The API will run on `http://localhost:4000`
 In a separate terminal:
 
 ```bash
-cd src/client
+cd client
 npm run dev
 ```
 
@@ -248,7 +248,7 @@ The reverse proxy ensures that:
 
 ### Local Development
 
-In `src/client/vite.config.js`, Vite's dev server proxies `/api/*` to `http://localhost:4000`, simulating the reverse proxy.
+In `client/vite.config.js`, Vite's dev server proxies `/api/*` to `http://localhost:4000`, simulating the reverse proxy.
 
 ### Production (Netlify)
 
@@ -276,8 +276,8 @@ This means:
 2. Click **"Add new site"** → **"Import an existing project"**
 3. Connect your Git provider and select your repository
 4. Configure build settings (these should be auto-detected from `netlify.toml`, but verify):
-   - **Build command**: `npm install && cd src/client && npm install && npm run build`
-   - **Publish directory**: `src/client/dist`
+   - **Build command**: `npm install && cd client && npm install && npm run build`
+   - **Publish directory**: `client/dist`
    - **Base directory**: (leave empty or set to root)
 
 #### Step 3: Configure Environment Variables
@@ -368,7 +368,7 @@ Using Postman:
 
 ### 3. Test Pagination via Front-End
 
-1. Start the front-end: `cd src/client && npm run dev`
+1. Start the front-end: `cd client && npm run dev`
 2. Open `http://localhost:5173`
 3. You should see 10 items per page
 4. Click "Next" to go to page 2

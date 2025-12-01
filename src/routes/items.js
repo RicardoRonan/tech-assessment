@@ -3,18 +3,17 @@ const { getPaginatedItems } = require('../services/itemService');
 
 const router = express.Router();
 
-// GET /api/items?page=<number>&limit=<number>
 router.get('/', async (req, res) => {
   let page = parseInt(req.query.page, 10);
   let limit = parseInt(req.query.limit, 10);
+  const search = req.query.search || null;
+  const category = req.query.category || null;
 
   if (Number.isNaN(page) || page < 1) page = 1;
   if (Number.isNaN(limit) || limit < 1) limit = 10;
-
-  // Optional maximum limit to avoid silly values
   if (limit > 50) limit = 50;
 
-  const { data, error, count } = await getPaginatedItems(page, limit);
+  const { data, error, count } = await getPaginatedItems(page, limit, search, category);
 
   if (error) {
     return res.status(500).json({
@@ -35,6 +34,8 @@ router.get('/', async (req, res) => {
     currentPage: page,
     nextPage,
     prevPage,
+    search: search || null,
+    category: category || null,
   });
 });
 

@@ -6,7 +6,6 @@ const itemsRouter = require('./routes/items');
 
 const app = express();
 
-// CORS middleware for local development
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -19,11 +18,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// Routes
 app.use('/api/batch', batchRouter);
 app.use('/api/items', itemsRouter);
 
-// Simple health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
