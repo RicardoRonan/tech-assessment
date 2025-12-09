@@ -28,12 +28,28 @@ cd ..
 Create the `items` table in Supabase:
 
 ```sql
-CREATE TABLE items (
-  id BIGSERIAL PRIMARY KEY,
+-- Supabase Database Schema
+-- Run this SQL in your Supabase SQL Editor to create the items table
+
+CREATE TABLE IF NOT EXISTS items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   category TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Create an index on createdAt for better pagination performance
+CREATE INDEX IF NOT EXISTS idx_items_created_at ON items("createdAt" DESC);
+
+-- Enable Row Level Security (optional, adjust as needed)
+ALTER TABLE items ENABLE ROW LEVEL SECURITY;
+
+-- Create a policy that allows all operations (adjust based on your security needs)
+CREATE POLICY "Allow all operations on items" ON items
+  FOR ALL
+  USING (true)
+  WITH CHECK (true);
 ```
 
 ### Environment Variables
